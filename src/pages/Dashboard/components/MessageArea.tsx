@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Client } from '@stomp/stompjs';
 import { CornerDownLeft } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 type Inputs = {
@@ -37,6 +37,21 @@ const MessageArea = () => {
 
   const { register, handleSubmit, watch, setValue } = useForm<Inputs>();
   const stompClientRef = useRef<Client | null>(null);
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+  const onSubmit: SubmitHandler<Inputs> = data => {
+    console.log(data);
+    if (stompClientRef.current?.connected) {
+      stompClientRef.current?.publish({
+        destination: '/app/hello',
+        body: JSON.stringify({ message: data.message })
+      });
+      setValue('message', '');
+    } else {
+      // Queue the message if not connected
+      setMessageQueue(prevQueue => [...prevQueue, data.message]);
+    }
+  };
 
   useEffect(() => {
     if (!stompClientRef.current) {
@@ -82,6 +97,17 @@ const MessageArea = () => {
     };
   }, []);
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   // Activate client on component mount
   useEffect(() => {
     stompClientRef.current?.activate();
@@ -90,26 +116,9 @@ const MessageArea = () => {
     };
   }, []);
 
-  const onSubmit: SubmitHandler<Inputs> = data => {
-    console.log(data);
-    if (stompClientRef.current?.connected) {
-      stompClientRef.current?.publish({
-        destination: '/app/hello',
-        body: JSON.stringify({ message: data.message })
-      });
-      setValue('message', '');
-    } else {
-      // Queue the message if not connected
-      setMessageQueue(prevQueue => [...prevQueue, data.message]);
-    }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('');
-  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
@@ -159,6 +168,9 @@ const MessageArea = () => {
               </div>
             );
         })}
+        <div
+          style={{ float: 'left', clear: 'both' }}
+          ref={messagesEndRef}></div>
       </div>
       <form
         className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring mt-5"
