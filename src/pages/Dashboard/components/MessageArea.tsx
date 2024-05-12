@@ -56,7 +56,7 @@ const MessageArea = () => {
   useEffect(() => {
     if (!stompClientRef.current) {
       stompClientRef.current = new Client({
-        brokerURL: 'ws://localhost:8080/chat',
+        brokerURL: 'wss://cv.bykowski.dev/api/chat',
         reconnectDelay: 5000,
         onConnect: frame => {
           console.log('Connected:', frame);
