@@ -1,5 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,32 +6,17 @@ import { CornerDownLeft } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
+import Message from './Message';
+import { Message as MessageType } from '@/types/Message';
+
 type Inputs = {
-  message: string;
-};
-
-enum ROLES {
-  ADMIN = 'ADMIN',
-  USER = 'USER'
-}
-
-type User = {
-  email: string;
-  id: string;
-  pictureUrl: string;
-  roles: ROLES[];
-  userName: string;
-};
-
-type Message = {
-  sender: User;
   message: string;
 };
 
 const MessageArea = () => {
   // State to hold messages queued for sending
   const [messageQueue, setMessageQueue] = useState<string[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
   const { register, handleSubmit, watch, setValue } = useForm<Inputs>();
   const stompClientRef = useRef<Client | null>(null);
@@ -56,7 +39,7 @@ const MessageArea = () => {
   useEffect(() => {
     if (!stompClientRef.current) {
       stompClientRef.current = new Client({
-        brokerURL: 'wss://cv.bykowski.dev/api/chat',
+        brokerURL: 'ws://localhost:8080/api/chat',
         reconnectDelay: 5000,
         onConnect: frame => {
           console.log('Connected:', frame);
@@ -69,7 +52,7 @@ const MessageArea = () => {
           });
           setMessageQueue([]);
 
-          stompClientRef.current?.subscribe('/topic/greetings', greeting => {
+          stompClientRef.current?.subscribe('/topic/messages', greeting => {
             const newMessage = JSON.parse(greeting.body);
             console.log(newMessage);
             console.log(newMessage.sender.pictureUrl);
@@ -97,13 +80,6 @@ const MessageArea = () => {
     };
   }, []);
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('');
-  };
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -123,51 +99,9 @@ const MessageArea = () => {
   return (
     <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
       <div className="flex-1 max-h-[70vh] overflow-auto">
-        {messages.map(message => {
-          const isOwnMessage = message.sender.id === '65f9f85b71d1f069c1e0fbaf';
-          if (!isOwnMessage)
-            return (
-              <div
-                className="flex mb-5 items-center gap-4"
-                key={JSON.stringify(message)}>
-                <Avatar className="hidden h-9 w-9 sm:flex">
-                  <AvatarImage
-                    referrerPolicy="no-referrer"
-                    src={message.sender.pictureUrl}
-                    alt="Avatar"
-                  />
-                  <AvatarFallback>
-                    {getInitials(message.sender.userName)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    {message.sender.userName}{' '}
-                    {message?.sender.roles.includes(ROLES.ADMIN) && (
-                      <Badge variant="secondary" className="mr-2">
-                        Administrator
-                      </Badge>
-                    )}
-                  </p>
-                  {/* {message?.sender.roles.includes(ROLES.ADMIN) && (
-                    <Badge variant="secondary" className="mr-2">
-                      Administrator
-                    </Badge>
-                  )} */}
-                  {message.message}
-                </div>
-                {/* <div className="ml-auto font-medium">{message.message}</div> */}
-              </div>
-            );
-          else
-            return (
-              <div
-                key={JSON.stringify(message)}
-                className="w-full text-right my-5">
-                {message.message}
-              </div>
-            );
-        })}
+        {messages.map(message => (
+          <Message key={JSON.stringify(message)} message={message} />
+        ))}
         <div
           style={{ float: 'left', clear: 'both' }}
           ref={messagesEndRef}></div>
@@ -181,7 +115,7 @@ const MessageArea = () => {
         </Label>
         <Textarea
           id="message"
-          placeholder="Type your message here..."
+          placeholder="Napisz swoją wiadomość tutaj..."
           className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
           value={watch('message')}
           onKeyDown={e => {
@@ -214,11 +148,11 @@ const MessageArea = () => {
             </Tooltip>
           </TooltipProvider> */}
           <Button type="submit" size="sm" className="ml-auto gap-1.5">
-            Send Message
+            Wyślij
             <CornerDownLeft className="size-3.5" />
           </Button>
         </div>
-      </form>{' '}
+      </form>
     </div>
   );
 };
