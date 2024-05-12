@@ -18,7 +18,8 @@ const Message = ({ message }: Props) => {
       .join('');
   };
 
-  const isOwnMessage = message.sender.id === '65f9f85b71d1f069c1e0fbaf';
+  const isOwnMessage =
+    message.sender.id === JSON.parse(localStorage.getItem('user') || '')?.id;
   if (isOwnMessage) {
     return (
       <div key={JSON.stringify(message)} className="w-full text-right my-5">
@@ -41,17 +42,13 @@ const Message = ({ message }: Props) => {
         <div className="text-sm font-medium leading-none">
           {message.sender.userName}{' '}
           {message?.sender.roles.includes(ROLES.ADMIN) && (
-            <Badge variant="secondary">
-              Administrator
-            </Badge>
+            <Badge variant="secondary">Administrator</Badge>
           )}
         </div>
         <div className="flex gap-2 items-center">
-          <p className={isVisible ? '' : 'blur-sm'}>
-            {message.message}
-          </p>
+          <p className={isVisible ? '' : 'blur-sm'}>{message.message}</p>
           {message.toxicity.isToxic && (
-            <Badge variant="destructive" className='px-0.5'>
+            <Badge variant="destructive" className="px-0.5">
               <Eye onClick={() => setVisible(!isVisible)} className="size-3" />
             </Badge>
           )}

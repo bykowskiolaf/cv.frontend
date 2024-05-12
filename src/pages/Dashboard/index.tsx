@@ -1,27 +1,30 @@
 import { ModeToggle } from '@/components/ModeToggle';
 import { Button } from '@/components/ui/button';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger
-} from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import {
   Tooltip,
   TooltipProvider,
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip';
-import {
-  LifeBuoy,
-  SquareUser,
-  Triangle,
-  Users
-} from 'lucide-react';
+import { useSearch } from '@tanstack/react-router';
+import { LifeBuoy, SquareUser, Triangle, Users } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 import FriendsList from './components/FriendsList';
 import MessageArea from './components/MessageArea';
 
 export function Dashboard() {
+  // @ts-expect-error - Not sure how to fix this - maybe help here? => https://github.com/TanStack/router/issues/767
+  const { loginSuccess } = useSearch({ strict: false });
+
+  useEffect(() => {
+    if (loginSuccess) {
+      toast.success('Zalogowano pomyślnie!');
+    }
+  }, [loginSuccess]);
+
   return (
     <div className="grid h-screen w-full pl-[53px]">
       <aside className="inset-y fixed  left-0 z-20 flex h-full flex-col border-r">
