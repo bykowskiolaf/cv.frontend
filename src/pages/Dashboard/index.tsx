@@ -28,7 +28,6 @@ import {
   Bird,
   LifeBuoy,
   Rabbit,
-  Settings,
   SquareTerminal,
   SquareUser,
   Triangle,
@@ -37,7 +36,6 @@ import {
 } from 'lucide-react';
 
 import MessageArea from './components/MessageArea';
-import { PersonIcon } from '@radix-ui/react-icons';
 
 export function Dashboard() {
   return (
