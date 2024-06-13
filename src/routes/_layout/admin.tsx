@@ -1,3 +1,4 @@
+import LoadingIndicator from '@/components/LoadingIndicator';
 import Admin from '@/pages/Admin';
 import { bannedUsersQueryOptions } from '@/pages/Admin/hooks/useBanned/useBannedQueryOptions';
 import { usersQueryOptions } from '@/pages/Admin/hooks/useUsers/useUsersQueryOptions';
@@ -28,5 +29,6 @@ export const Route = createFileRoute('/_layout/admin')({
     queryClient.ensureQueryData(bannedUsersQueryOptions);
     queryClient.ensureQueryData(usersQueryOptions);
   },
+  pendingComponent: () => <LoadingIndicator screen />,
   component: Admin
 });
