@@ -26,7 +26,7 @@ const MessageArea = () => {
     console.log(data);
     if (stompClientRef.current?.connected) {
       stompClientRef.current?.publish({
-        destination: '/app/hello',
+        destination: '/app/message',
         body: JSON.stringify({ message: data.message })
       });
       setValue('message', '');
@@ -46,7 +46,7 @@ const MessageArea = () => {
           // Attempt to send messages that were queued during downtime
           messageQueue.forEach(message => {
             stompClientRef.current?.publish({
-              destination: '/app/hello',
+              destination: '/app/message',
               body: JSON.stringify({ message })
             });
           });

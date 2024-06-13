@@ -6,35 +6,28 @@ import { createRootRouteWithContext } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
+const checkUserSession = async () => {
+  try {
+    const response = await Axios.get(URLS.ME());
+    if (response.status === 200) {
+      return;
+    }
+  } catch (error) {
+    // Session is invalid, remove user from localStorage and redirect to login
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  }
+};
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
   loader: async ({ location }) => {
-    if (location.pathname === '/login' && localStorage.getItem('user')) {
-      window.location.href = '/dashboard';
+    if (!window.sessionChecked && location.pathname !== '/login') {
+      window.sessionChecked = true;
+      await checkUserSession();
     }
-
-    if (location.pathname !== '/login' && !localStorage.getItem('user')) {
-      Axios.get(URLS.ME())
-        .then(res => {
-          console.log(res);
-          if (res.status === 200) {
-            localStorage.setItem('user', JSON.stringify(res.data));
-            window.location.href = '/dashboard';
-          } else {
-            localStorage.removeItem('user');
-            window.location.href = '/login';
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          window.location.href = '/login';
-        });
-    }
-
-    if (location.pathname === '/') {
-      window.location.href = '/login';
-    }
+    return;
   },
   pendingComponent: () => <LoadingIndicator screen />,
   component: () => (
