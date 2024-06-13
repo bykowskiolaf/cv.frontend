@@ -13,6 +13,11 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as DashboardImport } from './routes/dashboard'
+import { Route as LayoutImport } from './routes/_layout'
+import { Route as LayoutStatisticsImport } from './routes/_layout/statistics'
+import { Route as LayoutFaqImport } from './routes/_layout/faq'
+import { Route as LayoutDashboardImport } from './routes/_layout/dashboard'
+import { Route as LayoutAdminImport } from './routes/_layout/admin'
 
 // Create/Update Routes
 
@@ -26,10 +31,39 @@ const DashboardRoute = DashboardImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const LayoutRoute = LayoutImport.update({
+  id: '/_layout',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LayoutStatisticsRoute = LayoutStatisticsImport.update({
+  path: '/statistics',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutFaqRoute = LayoutFaqImport.update({
+  path: '/faq',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutDashboardRoute = LayoutDashboardImport.update({
+  path: '/dashboard',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutAdminRoute = LayoutAdminImport.update({
+  path: '/admin',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_layout': {
+      preLoaderRoute: typeof LayoutImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard': {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
@@ -38,11 +72,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/_layout/admin': {
+      preLoaderRoute: typeof LayoutAdminImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/dashboard': {
+      preLoaderRoute: typeof LayoutDashboardImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/faq': {
+      preLoaderRoute: typeof LayoutFaqImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/statistics': {
+      preLoaderRoute: typeof LayoutStatisticsImport
+      parentRoute: typeof LayoutImport
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([DashboardRoute, LoginRoute])
+export const routeTree = rootRoute.addChildren([
+  LayoutRoute.addChildren([
+    LayoutAdminRoute,
+    LayoutDashboardRoute,
+    LayoutFaqRoute,
+    LayoutStatisticsRoute,
+  ]),
+  DashboardRoute,
+  LoginRoute,
+])
 
 /* prettier-ignore-end */

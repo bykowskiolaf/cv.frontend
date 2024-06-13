@@ -26,7 +26,7 @@ const MessageArea = () => {
     console.log(data);
     if (stompClientRef.current?.connected) {
       stompClientRef.current?.publish({
-        destination: '/app/hello',
+        destination: '/app/message',
         body: JSON.stringify({ message: data.message })
       });
       setValue('message', '');
@@ -39,14 +39,14 @@ const MessageArea = () => {
   useEffect(() => {
     if (!stompClientRef.current) {
       stompClientRef.current = new Client({
-        brokerURL: 'ws://localhost:8080/api/chat',
+        brokerURL: import.meta.env.MODE === 'development' ? 'ws://localhost:8080/api/chat' :'wss://cv.bykowski.dev/api/chat',
         reconnectDelay: 5000,
         onConnect: frame => {
           console.log('Connected:', frame);
           // Attempt to send messages that were queued during downtime
           messageQueue.forEach(message => {
             stompClientRef.current?.publish({
-              destination: '/app/hello',
+              destination: '/app/message',
               body: JSON.stringify({ message })
             });
           });
