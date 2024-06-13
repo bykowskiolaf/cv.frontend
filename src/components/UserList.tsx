@@ -20,6 +20,8 @@ const UserList = ({
       .map(word => word[0])
       .join('');
   };
+
+  users.sort((a, b) => a.userName.localeCompare(b.userName));
   return (
     <div
       className="relative flex-col items-start gap-8 md:flex m-5"
@@ -30,7 +32,7 @@ const UserList = ({
             {name ?? 'Użytkownicy'}
           </legend>
           {users && users.length > 0
-            ? users.map((user, index) => (
+            ? users.map(user => (
                 <>
                   <div
                     className="flex items-center gap-4 bg-muted/50 p-2 rounded-lg"
@@ -48,7 +50,7 @@ const UserList = ({
                     <div className="grid gap-1">
                       <div
                         className={`text-sm font-medium leading-none ${user.roles.includes(ROLES.BANNED) && 'text-red-600'}`}>
-                        {user.userName} {index === 0 && '👑'}
+                        {user.userName}
                       </div>
                       {user.email}
                     </div>
