@@ -2,7 +2,7 @@ import LoadingIndicator from '@/components/LoadingIndicator';
 import { URLS } from '@/config/URLS';
 import { Axios } from '@/utils/Axios';
 import { QueryClient } from '@tanstack/react-query';
-import { createRootRouteWithContext } from '@tanstack/react-router';
+import { createRootRouteWithContext, redirect } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
@@ -23,7 +23,9 @@ const checkUserSession = async () => {
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
-  loader: async ({ location }) => {
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === '/') throw redirect({ to: '/login' });
+
     if (!window.sessionChecked && location.pathname !== '/login') {
       window.sessionChecked = true;
       await checkUserSession();
