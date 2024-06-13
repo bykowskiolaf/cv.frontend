@@ -1,6 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ROLES, User } from '@/types/User';
 
+import { Badge } from './ui/badge';
+
 type UserListProps = {
   users: User[];
   name: string;
@@ -50,7 +52,10 @@ const UserList = ({
                     <div className="grid gap-1">
                       <div
                         className={`text-sm font-medium leading-none ${user.roles.includes(ROLES.BANNED) && 'text-red-600'}`}>
-                        {user.userName}
+                        {user.userName}{' '}
+                        {user.roles.includes(ROLES.ADMIN) && (
+                          <Badge variant="secondary">Administrator</Badge>
+                        )}
                       </div>
                       {user.email}
                     </div>
