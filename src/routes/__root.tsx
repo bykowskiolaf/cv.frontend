@@ -10,6 +10,7 @@ const checkUserSession = async () => {
   try {
     const response = await Axios.get(URLS.ME());
     if (response.status === 200) {
+      localStorage.setItem('user', JSON.stringify(response.data));
       return;
     }
   } catch (error) {
