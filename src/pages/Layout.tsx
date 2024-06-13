@@ -57,11 +57,11 @@ export function Layout() {
             />
           </Button>
         </div>
-        {JSON.parse(localStorage.getItem('user') || '{}').roles?.includes(
-          'ADMIN'
-        ) && (
-          <nav className="grid gap-1 p-2">
-            <TooltipProvider>
+        <nav className="grid gap-1 p-2">
+          <TooltipProvider>
+            {JSON.parse(localStorage.getItem('user') || '{}').roles?.includes(
+              'ADMIN'
+            ) && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -79,27 +79,26 @@ export function Layout() {
                   Panel administracyjny
                 </TooltipContent>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-lg"
-                    aria-label="statistics page">
-                    <Crown
-                      onClick={() => navigate({ to: '/statistics' })}
-                      className="size-5"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" sideOffset={5}>
-                  Statystyki użytkowników
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </nav>
-        )}
-
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-lg"
+                  aria-label="statistics page">
+                  <Crown
+                    onClick={() => navigate({ to: '/statistics' })}
+                    className="size-5"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                Statystyki użytkowników
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </nav>
         <nav className="mt-auto grid gap-1 p-2">
           <TooltipProvider>
             <Tooltip>
