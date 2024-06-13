@@ -1,6 +1,5 @@
 import { ModeToggle } from '@/components/ModeToggle';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +18,7 @@ import {
   LifeBuoy,
   MessageCircle,
   Shield,
-  SquareUser,
-  Users
+  SquareUser
 } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';

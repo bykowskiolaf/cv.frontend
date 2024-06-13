@@ -5,7 +5,6 @@ import {
   useQueryClient,
   useSuspenseQuery
 } from '@tanstack/react-query';
-import { isErrored } from 'stream';
 
 import { bannedUsersQueryOptions } from './useBannedQueryOptions';
 
